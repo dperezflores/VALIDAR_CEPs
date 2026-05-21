@@ -1,0 +1,7 @@
+streamlit
+pandas
+openpyxl
+selenium
+undetected-chromedriver
+python-docx
+pymupdf
