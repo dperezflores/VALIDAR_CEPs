@@ -27,6 +27,11 @@ class ValidadorBanxico:
 
     def _configurar_navegador(self):
         options = uc.ChromeOptions()
+        # ES OBLIGATORIO PARA LA NUBE:
+        options.add_argument("--headless=new") 
+        options.add_argument("--no-sandbox")
+        options.add_argument("--disable-dev-shm-usage")
+        
         prefs = {
             "download.default_directory": DOWNLOAD_DIR,
             "download.prompt_for_download": False,
@@ -34,8 +39,8 @@ class ValidadorBanxico:
         }
         options.add_experimental_option("prefs", prefs)
         
-        driver = uc.Chrome(options=options, version_main=148) 
-        driver.maximize_window()
+        # QUITAMOS version_main=148. Dejamos que la librería lo encuentre sola:
+        driver = uc.Chrome(options=options) 
         return driver
 
     def _escribir_como_humano(self, elemento, texto: str):
