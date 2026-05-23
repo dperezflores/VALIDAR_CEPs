@@ -7,7 +7,9 @@ import fitz
 from docx import Document
 from docx.shared import Inches
 
-import undetected_chromedriver as uc
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -26,28 +28,33 @@ class ValidadorBanxico:
         self.wait = WebDriverWait(self.driver, 120) 
 
     def _configurar_navegador(self):
-        options = uc.ChromeOptions()
-        options.add_argument("--headless=new")
-        options.add_argument("--no-sandbox")
-        options.add_argument("--disable-dev-shm-usage")
-        options.add_argument("--disable-gpu")
-        
-        # Forzar la ruta del ejecutable de Chromium en Streamlit/Linux
-        options.binary_location = "/usr/bin/chromium"
-        
-        prefs = {
-            "download.default_directory": DOWNLOAD_DIR,
-            "download.prompt_for_download": False,
-            "plugins.always_open_pdf_externally": True
-        }
-        options.add_experimental_option("prefs", prefs)
-        
-        # Usamos el driver de la librería sin forzar versión
-        driver = uc.Chrome(
-            options=options,
-            driver_executable_path="/usr/bin/chromedriver" 
-        )
-        return driver
+    options = Options()
+
+    options.add_argument("--headless=new")
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
+    options.add_argument("--disable-gpu")
+    options.add_argument("--window-size=1920,1080")
+
+    # Ruta de chromium en Streamlit
+    options.binary_location = "/usr/bin/chromium"
+
+    prefs = {
+        "download.default_directory": DOWNLOAD_DIR,
+        "download.prompt_for_download": False,
+        "plugins.always_open_pdf_externally": True
+    }
+
+    options.add_experimental_option("prefs", prefs)
+
+    service = Service("/usr/bin/chromedriver")
+
+    driver = webdriver.Chrome(
+        service=service,
+        options=options
+    )
+
+    return driver
 
     def _escribir_como_humano(self, elemento, texto: str):
         """Simula a una persona tecleando letra por letra con pausas irregulares."""
