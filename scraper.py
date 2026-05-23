@@ -27,10 +27,13 @@ class ValidadorBanxico:
 
     def _configurar_navegador(self):
         options = uc.ChromeOptions()
-        # ES OBLIGATORIO PARA LA NUBE:
-        options.add_argument("--headless=new") 
+        options.add_argument("--headless=new")
         options.add_argument("--no-sandbox")
         options.add_argument("--disable-dev-shm-usage")
+        options.add_argument("--disable-gpu")
+        
+        # Forzar la ruta del ejecutable de Chromium en Streamlit/Linux
+        options.binary_location = "/usr/bin/chromium"
         
         prefs = {
             "download.default_directory": DOWNLOAD_DIR,
@@ -39,8 +42,11 @@ class ValidadorBanxico:
         }
         options.add_experimental_option("prefs", prefs)
         
-        # QUITAMOS version_main=148. Dejamos que la librería lo encuentre sola:
-        driver = uc.Chrome(options=options) 
+        # Usamos el driver de la librería sin forzar versión
+        driver = uc.Chrome(
+            options=options,
+            driver_executable_path="/usr/bin/chromedriver" 
+        )
         return driver
 
     def _escribir_como_humano(self, elemento, texto: str):
